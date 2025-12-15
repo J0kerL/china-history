@@ -8,6 +8,8 @@ import com.history.common.util.UserContext;
 import com.history.mapper.UserMapper;
 import com.history.model.dto.LoginDTO;
 import com.history.model.dto.RegisterDTO;
+import com.history.model.dto.UpdatePasswordDTO;
+import com.history.model.dto.UpdateProfileDTO;
 import com.history.model.entity.User;
 import com.history.model.vo.LoginVO;
 import com.history.model.vo.UserVO;
@@ -35,6 +37,19 @@ public class UserServiceImpl implements UserService {
     private RedisUtil redisUtil;
 
     /**
+     * 将 User 实体转换为 UserVO
+     */
+    private UserVO convertToUserVO(User user) {
+        UserVO userVO = new UserVO();
+        userVO.setId(user.getId());
+        userVO.setUsername(user.getUsername());
+        userVO.setPassword("******");
+        userVO.setEmail(user.getEmail());
+        userVO.setCreatedAt(user.getCreatedAt());
+        return userVO;
+    }
+
+    /**
      * 用户注册
      */
     @Override
@@ -56,13 +71,7 @@ public class UserServiceImpl implements UserService {
         }
         log.info("用户注册成功：username={}", registerDTO.getUsername());
         User account = userMapper.selectByUsername(registerDTO.getUsername());
-        UserVO userVO = new UserVO();
-        userVO.setId(account.getId());
-        userVO.setUsername(account.getUsername());
-        userVO.setPassword("******");
-        userVO.setEmail(account.getEmail());
-        userVO.setCreatedAt(account.getCreatedAt());
-        return userVO;
+        return convertToUserVO(account);
     }
 
     /**
@@ -123,12 +132,77 @@ public class UserServiceImpl implements UserService {
             throw new BizException("用户不存在");
         }
 
-        UserVO userVO = new UserVO();
-        userVO.setId(user.getId());
-        userVO.setUsername(user.getUsername());
-        userVO.setPassword("******");
-        userVO.setEmail(user.getEmail());
-        userVO.setCreatedAt(user.getCreatedAt());
-        return userVO;
+        return convertToUserVO(user);
+    }
+
+    /**
+     * 修改个人信息
+     */
+    @Override
+    public UserVO updateProfile(UpdateProfileDTO updateProfileDTO) {
+        Long userId = UserContext.getUserId();
+        if (userId == null) {
+            throw new BizException("用户未登录");
+        }
+
+        User user = userMapper.selectById(userId);
+        if (user == null) {
+            throw new BizException("用户不存在");
+        }
+
+        // 检查用户名是否被其他用户占用
+        if (!user.getUsername().equals(updateProfileDTO.getUsername())) {
+            User existUser = userMapper.selectByUsername(updateProfileDTO.getUsername());
+            if (existUser != null) {
+                throw new BizException("用户名已被占用");
+            }
+        }
+
+        // 更新用户信息
+        user.setUsername(updateProfileDTO.getUsername());
+        user.setEmail(updateProfileDTO.getEmail());
+        int result = userMapper.update(user);
+        if (result <= 0) {
+            throw new BizException("更新失败");
+        }
+
+        log.info("用户信息更新成功：userId={}", userId);
+
+        return convertToUserVO(user);
+    }
+
+    /**
+     * 修改密码
+     */
+    @Override
+    public void updatePassword(UpdatePasswordDTO updatePasswordDTO) {
+        Long userId = UserContext.getUserId();
+        if (userId == null) {
+            throw new BizException("用户未登录");
+        }
+
+        // 验证新密码和确认密码是否一致
+        if (!updatePasswordDTO.getNewPassword().equals(updatePasswordDTO.getConfirmPassword())) {
+            throw new BizException("两次输入的密码不一致");
+        }
+
+        User user = userMapper.selectById(userId);
+        if (user == null) {
+            throw new BizException("用户不存在");
+        }
+
+        // 验证当前密码
+        if (!BCryptUtil.matches(updatePasswordDTO.getCurrentPassword(), user.getPassword())) {
+            throw new BizException("当前密码错误");
+        }
+
+        // 更新密码
+        user.setPassword(BCryptUtil.encode(updatePasswordDTO.getNewPassword()));
+        int result = userMapper.update(user);
+        if (result <= 0) {
+            throw new BizException("密码更新失败");
+        }
+
+        log.info("用户密码更新成功：userId={}", userId);
     }
 }
