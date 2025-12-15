@@ -9,10 +9,7 @@ import com.history.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 用户认证控制器
@@ -42,5 +39,23 @@ public class UserController {
     public Result<LoginVO> login(@Valid @RequestBody LoginDTO loginDTO) {
         LoginVO loginVO = userService.login(loginDTO);
         return Result.ok(loginVO);
+    }
+
+    /**
+     * 用户退出登录
+     */
+    @PostMapping("/logout")
+    public Result<Void> logout() {
+        userService.logout();
+        return Result.ok();
+    }
+
+    /**
+     * 获取当前用户信息
+     */
+    @GetMapping("/me")
+    public Result<UserVO> getCurrentUser() {
+        UserVO userVO = userService.getCurrentUser();
+        return Result.ok(userVO);
     }
 }

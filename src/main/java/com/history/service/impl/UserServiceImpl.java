@@ -4,6 +4,7 @@ import com.history.common.exception.BizException;
 import com.history.common.util.BCryptUtil;
 import com.history.common.util.JwtUtil;
 import com.history.common.util.RedisUtil;
+import com.history.common.util.UserContext;
 import com.history.mapper.UserMapper;
 import com.history.model.dto.LoginDTO;
 import com.history.model.dto.RegisterDTO;
@@ -91,5 +92,43 @@ public class UserServiceImpl implements UserService {
 
         // 返回登录信息
         return new LoginVO(token, user.getId(), user.getUsername());
+    }
+
+    /**
+     * 用户退出登录
+     */
+    @Override
+    public void logout() {
+        Long userId = UserContext.getUserId();
+        if (userId != null) {
+            // 从Redis中删除Token
+            String redisKey = "token:" + userId;
+            redisUtil.delete(redisKey);
+            log.info("用户退出登录：userId={}", userId);
+        }
+    }
+
+    /**
+     * 获取当前用户信息
+     */
+    @Override
+    public UserVO getCurrentUser() {
+        Long userId = UserContext.getUserId();
+        if (userId == null) {
+            throw new BizException("用户未登录");
+        }
+
+        User user = userMapper.selectById(userId);
+        if (user == null) {
+            throw new BizException("用户不存在");
+        }
+
+        UserVO userVO = new UserVO();
+        userVO.setId(user.getId());
+        userVO.setUsername(user.getUsername());
+        userVO.setPassword("******");
+        userVO.setEmail(user.getEmail());
+        userVO.setCreatedAt(user.getCreatedAt());
+        return userVO;
     }
 }
