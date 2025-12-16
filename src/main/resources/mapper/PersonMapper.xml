@@ -6,12 +6,17 @@
     <resultMap id="BaseResultMap" type="com.history.model.entity.Person">
         <id column="id" property="id"/>
         <result column="name" property="name"/>
-        <result column="style_name" property="styleName"/>
+        <result column="surname" property="surname"/>
+        <result column="given_name" property="givenName"/>
+        <result column="courtesy_name" property="courtesyName"/>
+        <result column="art_name" property="artName"/>
+        <result column="posthumous_name" property="posthumousName"/>
+        <result column="temple_name" property="templeName"/>
         <result column="dynasty_id" property="dynastyId"/>
         <result column="birth_year" property="birthYear"/>
         <result column="death_year" property="deathYear"/>
         <result column="summary" property="summary"/>
-        <result column="image_url" property="imageUrl"/>
+        <result column="achievements" property="achievements"/>
         <result column="created_at" property="createdAt"/>
     </resultMap>
 

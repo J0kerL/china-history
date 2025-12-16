@@ -49,7 +49,10 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns(
                         "/auth/login",
                         "/auth/register",
-                        "/dynasty/list",  // 首页朝代列表允许匿名访问
+                        // 首页朝代列表允许匿名访问
+                        "/dynasty/list",
+                        // 首页随机人物允许匿名访问
+                        "/person/random",
                         "/error"
                 );
     }
