@@ -43,12 +43,13 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(logInterceptor)
                 .addPathPatterns("/**");
 
-        // JWT拦截器 - 拦截所有请求，但排除登录和注册接口
+        // JWT拦截器 - 拦截所有请求，但排除公开接口
         registry.addInterceptor(jwtInterceptor)
                 .addPathPatterns("/**")
                 .excludePathPatterns(
                         "/auth/login",
                         "/auth/register",
+                        "/dynasty/list",  // 首页朝代列表允许匿名访问
                         "/error"
                 );
     }

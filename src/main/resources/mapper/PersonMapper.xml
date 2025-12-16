@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.history.mapper.PersonMapper">
+
+    <resultMap id="BaseResultMap" type="com.history.model.entity.Person">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="style_name" property="styleName"/>
+        <result column="dynasty_id" property="dynastyId"/>
+        <result column="birth_year" property="birthYear"/>
+        <result column="death_year" property="deathYear"/>
+        <result column="summary" property="summary"/>
+        <result column="image_url" property="imageUrl"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <select id="selectByDynastyId" resultMap="BaseResultMap">
+        SELECT * FROM person WHERE dynasty_id = #{dynastyId} ORDER BY birth_year ASC
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM person WHERE id = #{id}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT * FROM person ORDER BY dynasty_id ASC, birth_year ASC
+    </select>
+
+</mapper>

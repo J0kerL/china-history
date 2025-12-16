@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.history.mapper.EventMapper">
+
+    <resultMap id="BaseResultMap" type="com.history.model.entity.Event">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="start_year" property="startYear"/>
+        <result column="end_year" property="endYear"/>
+        <result column="dynasty_id" property="dynastyId"/>
+        <result column="category" property="category"/>
+        <result column="summary" property="summary"/>
+        <result column="details" property="details"/>
+        <result column="location_place_id" property="locationPlaceId"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <select id="selectByDynastyId" resultMap="BaseResultMap">
+        SELECT * FROM event WHERE dynasty_id = #{dynastyId} ORDER BY start_year ASC
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM event WHERE id = #{id}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT * FROM event ORDER BY dynasty_id ASC, start_year ASC
+    </select>
+
+</mapper>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.history.mapper.DynastyMapper">
+
+    <resultMap id="BaseResultMap" type="com.history.model.entity.Dynasty">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="start_year" property="startYear"/>
+        <result column="end_year" property="endYear"/>
+        <result column="capital" property="capital"/>
+        <result column="overview" property="overview"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT * FROM dynasty ORDER BY start_year ASC
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM dynasty WHERE id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="com.history.model.entity.Dynasty" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO dynasty (name, start_year, end_year, capital, overview)
+        VALUES (#{name}, #{startYear}, #{endYear}, #{capital}, #{overview})
+    </insert>
+
+    <update id="update" parameterType="com.history.model.entity.Dynasty">
+        UPDATE dynasty
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="startYear != null">
+                start_year = #{startYear},
+            </if>
+            <if test="endYear != null">
+                end_year = #{endYear},
+            </if>
+            <if test="capital != null and capital != ''">
+                capital = #{capital},
+            </if>
+            <if test="overview != null and overview != ''">
+                overview = #{overview},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM dynasty WHERE id = #{id}
+    </delete>
+
+</mapper>
