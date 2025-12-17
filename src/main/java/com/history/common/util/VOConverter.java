@@ -3,9 +3,11 @@ package com.history.common.util;
 import com.history.model.entity.Dynasty;
 import com.history.model.entity.Event;
 import com.history.model.entity.Person;
+import com.history.model.entity.PlaceName;
 import com.history.model.vo.DynastyVO;
 import com.history.model.vo.EventVO;
 import com.history.model.vo.PersonVO;
+import com.history.model.vo.PlaceNameVO;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -102,6 +104,22 @@ public class VOConverter {
         } else {
             vo.setAchievements(Collections.emptyList());
         }
+        return vo;
+    }
+
+    /**
+     * PlaceName -> PlaceNameVO
+     */
+    public static PlaceNameVO toVO(PlaceName placeName) {
+        if (placeName == null) {
+            return null;
+        }
+        PlaceNameVO vo = new PlaceNameVO();
+        vo.setId(placeName.getId());
+        vo.setAncientName(placeName.getAncientName());
+        vo.setModernName(placeName.getModernName());
+        vo.setModernLocation(placeName.getModernLocation());
+        vo.setDescription(placeName.getDescription());
         return vo;
     }
 }
