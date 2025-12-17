@@ -36,3 +36,11 @@ logging:
     name: logs/china-history.log
     max-size: 100MB
     max-history: 30
+
+# AI服务配置 - 生产环境
+ai:
+  base-url: ${AI_BASE_URL:https://api.deepseek.com/v1}
+  api-key: ${AI_API_KEY}
+  model: ${AI_MODEL:deepseek-chat}
+  temperature: 0.7
+  max-tokens: 2000
