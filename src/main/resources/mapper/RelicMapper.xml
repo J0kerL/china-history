@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.history.mapper.RelicMapper">
+
+    <resultMap id="BaseResultMap" type="com.history.model.entity.Relic">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="location" property="location"/>
+        <result column="dynasty_id" property="dynastyId"/>
+        <result column="related_event_id" property="relatedEventId"/>
+        <result column="description" property="description"/>
+        <result column="coordinates" property="coordinates"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <resultMap id="RelicVOResultMap" type="com.history.model.vo.RelicVO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="location" property="location"/>
+        <result column="dynasty_id" property="dynastyId"/>
+        <result column="dynasty_name" property="dynastyName"/>
+        <result column="related_event_id" property="relatedEventId"/>
+        <result column="related_event_title" property="relatedEventTitle"/>
+        <result column="description" property="description"/>
+        <result column="coordinates" property="coordinates"/>
+    </resultMap>
+
+    <select id="selectAllWithDetails" resultMap="RelicVOResultMap">
+        SELECT r.id, r.name, r.location, r.dynasty_id, r.related_event_id, 
+               r.description, r.coordinates,
+               d.name AS dynasty_name,
+               e.title AS related_event_title
+        FROM relic r
+        LEFT JOIN dynasty d ON r.dynasty_id = d.id
+        LEFT JOIN event e ON r.related_event_id = e.id
+        ORDER BY r.id ASC
+    </select>
+
+    <select id="selectByIdWithDetails" resultMap="RelicVOResultMap">
+        SELECT r.id, r.name, r.location, r.dynasty_id, r.related_event_id, 
+               r.description, r.coordinates,
+               d.name AS dynasty_name,
+               e.title AS related_event_title
+        FROM relic r
+        LEFT JOIN dynasty d ON r.dynasty_id = d.id
+        LEFT JOIN event e ON r.related_event_id = e.id
+        WHERE r.id = #{id}
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM relic WHERE id = #{id}
+    </select>
+
+    <select id="selectByDynastyId" resultMap="RelicVOResultMap">
+        SELECT r.id, r.name, r.location, r.dynasty_id, r.related_event_id, 
+               r.description, r.coordinates,
+               d.name AS dynasty_name,
+               e.title AS related_event_title
+        FROM relic r
+        LEFT JOIN dynasty d ON r.dynasty_id = d.id
+        LEFT JOIN event e ON r.related_event_id = e.id
+        WHERE r.dynasty_id = #{dynastyId}
+        ORDER BY r.id ASC
+    </select>
+
+    <select id="selectByName" resultMap="RelicVOResultMap">
+        SELECT r.id, r.name, r.location, r.dynasty_id, r.related_event_id, 
+               r.description, r.coordinates,
+               d.name AS dynasty_name,
+               e.title AS related_event_title
+        FROM relic r
+        LEFT JOIN dynasty d ON r.dynasty_id = d.id
+        LEFT JOIN event e ON r.related_event_id = e.id
+        WHERE r.name LIKE CONCAT('%', #{name}, '%')
+        ORDER BY r.id ASC
+    </select>
+
+    <select id="search" resultMap="RelicVOResultMap">
+        SELECT r.id, r.name, r.location, r.dynasty_id, r.related_event_id, 
+               r.description, r.coordinates,
+               d.name AS dynasty_name,
+               e.title AS related_event_title
+        FROM relic r
+        LEFT JOIN dynasty d ON r.dynasty_id = d.id
+        LEFT JOIN event e ON r.related_event_id = e.id
+        WHERE r.name LIKE CONCAT('%', #{keyword}, '%')
+           OR r.location LIKE CONCAT('%', #{keyword}, '%')
+           OR d.name LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY r.id ASC
+    </select>
+
+    <select id="selectPage" resultMap="RelicVOResultMap">
+        SELECT r.id, r.name, r.location, r.dynasty_id, r.related_event_id, 
+               r.description, r.coordinates,
+               d.name AS dynasty_name,
+               e.title AS related_event_title
+        FROM relic r
+        LEFT JOIN dynasty d ON r.dynasty_id = d.id
+        LEFT JOIN event e ON r.related_event_id = e.id
+        ORDER BY r.id ASC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM relic
+    </select>
+
+</mapper>
