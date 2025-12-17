@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.history.mapper.PersonRelationMapper">
+
+    <resultMap id="BaseResultMap" type="com.history.model.entity.PersonRelation">
+        <id column="id" property="id"/>
+        <result column="person_id" property="personId"/>
+        <result column="related_person_id" property="relatedPersonId"/>
+        <result column="related_person_name" property="relatedPersonName"/>
+        <result column="relation_type" property="relationType"/>
+        <result column="description" property="description"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <select id="selectByPersonId" resultMap="BaseResultMap">
+        SELECT * FROM person_relation WHERE person_id = #{personId} ORDER BY id ASC
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT * FROM person_relation ORDER BY person_id ASC, id ASC
+    </select>
+
+</mapper>

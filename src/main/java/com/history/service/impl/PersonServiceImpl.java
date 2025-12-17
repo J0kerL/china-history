@@ -4,9 +4,12 @@ import com.history.common.exception.BizException;
 import com.history.common.util.VOConverter;
 import com.history.mapper.DynastyMapper;
 import com.history.mapper.PersonMapper;
+import com.history.mapper.PersonRelationMapper;
 import com.history.model.entity.Dynasty;
 import com.history.model.entity.Person;
+import com.history.model.entity.PersonRelation;
 import com.history.model.vo.PersonVO;
+import com.history.model.vo.PersonRelationVO;
 import com.history.service.PersonService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -27,11 +30,15 @@ public class PersonServiceImpl implements PersonService {
 
     private static final String PERSON_LIST_KEY = "person:list";
     private static final String PERSON_DETAIL_KEY = "person:detail:";
+    private static final String PERSON_RELATIONS_KEY = "person:relations:";
     // 缓存1天
     private static final long CACHE_EXPIRE_DAYS = 1;
 
     @Resource
     private PersonMapper personMapper;
+
+    @Resource
+    private PersonRelationMapper personRelationMapper;
 
     @Resource
     private DynastyMapper dynastyMapper;
@@ -114,6 +121,49 @@ public class PersonServiceImpl implements PersonService {
                 .collect(Collectors.toList());
 
         redisTemplate.opsForValue().set(PERSON_LIST_KEY, result, CACHE_EXPIRE_DAYS, TimeUnit.DAYS);
+        return result;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<PersonRelationVO> getPersonRelations(Long personId) {
+        String cacheKey = PERSON_RELATIONS_KEY + personId;
+        List<PersonRelationVO> cached = (List<PersonRelationVO>) redisTemplate.opsForValue().get(cacheKey);
+        if (cached != null) {
+            log.debug("从Redis缓存获取人物关系: {}", personId);
+            return cached;
+        }
+
+        // 获取当前人物信息
+        Person person = personMapper.selectById(personId);
+        String personName = person != null ? person.getName() : "";
+
+        // 查询关系
+        List<PersonRelation> relations = personRelationMapper.selectByPersonId(personId);
+        
+        // 获取所有人物用于填充名称
+        List<Person> allPersons = personMapper.selectAll();
+        Map<Long, String> personNameMap = allPersons.stream()
+                .collect(Collectors.toMap(Person::getId, Person::getName));
+
+        List<PersonRelationVO> result = relations.stream().map(r -> {
+            PersonRelationVO vo = new PersonRelationVO();
+            vo.setId(r.getId());
+            vo.setPersonId(r.getPersonId());
+            vo.setPersonName(personName);
+            vo.setRelatedPersonId(r.getRelatedPersonId());
+            // 如果有关联人物ID，从map获取名称；否则使用存储的名称
+            if (r.getRelatedPersonId() != null) {
+                vo.setRelatedPersonName(personNameMap.getOrDefault(r.getRelatedPersonId(), r.getRelatedPersonName()));
+            } else {
+                vo.setRelatedPersonName(r.getRelatedPersonName());
+            }
+            vo.setRelationType(r.getRelationType());
+            vo.setDescription(r.getDescription());
+            return vo;
+        }).collect(Collectors.toList());
+
+        redisTemplate.opsForValue().set(cacheKey, result, CACHE_EXPIRE_DAYS, TimeUnit.DAYS);
         return result;
     }
 }

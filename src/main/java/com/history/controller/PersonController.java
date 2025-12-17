@@ -2,6 +2,7 @@ package com.history.controller;
 
 import com.history.common.result.Result;
 import com.history.model.vo.PersonVO;
+import com.history.model.vo.PersonRelationVO;
 import com.history.service.PersonService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -50,5 +51,14 @@ public class PersonController {
     public Result<List<PersonVO>> getAllPersons() {
         List<PersonVO> persons = personService.getAllPersons();
         return Result.ok(persons);
+    }
+
+    /**
+     * 获取人物关系列表
+     */
+    @GetMapping("/{id}/relations")
+    public Result<List<PersonRelationVO>> getPersonRelations(@PathVariable Long id) {
+        List<PersonRelationVO> relations = personService.getPersonRelations(id);
+        return Result.ok(relations);
     }
 }

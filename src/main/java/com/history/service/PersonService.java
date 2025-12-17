@@ -1,6 +1,7 @@
 package com.history.service;
 
 import com.history.model.vo.PersonVO;
+import com.history.model.vo.PersonRelationVO;
 
 import java.util.List;
 
@@ -29,4 +30,11 @@ public interface PersonService {
      * @return 所有人物列表
      */
     List<PersonVO> getAllPersons();
+
+    /**
+     * 获取人物关系列表
+     * @param personId 人物ID
+     * @return 人物关系列表
+     */
+    List<PersonRelationVO> getPersonRelations(Long personId);
 }
