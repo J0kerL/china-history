@@ -13,7 +13,7 @@ spring:
       # API 基础地址（支持 OpenAI 兼容接口）
       base-url: ${AI_BASE_URL:https://dashscope.aliyuncs.com/compatible-mode/v1}
       # API 密钥
-      api-key: ${AI_API_KEY:sk-5fba47f57ae94f259d036d3387dc721e}
+      api-key: ${AI_API_KEY:your-api-key-here:
       chat:
         options:
           # 模型名称
