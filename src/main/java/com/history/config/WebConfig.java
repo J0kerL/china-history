@@ -53,8 +53,6 @@ public class WebConfig implements WebMvcConfigurer {
                         "/dynasty/list",
                         // 首页随机人物允许匿名访问
                         "/person/random",
-                        // AI助手允许匿名访问
-                        "/ai/**",
                         "/error"
                 );
     }

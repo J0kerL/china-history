@@ -25,21 +25,3 @@ logging:
     root: info
     com.history: debug
     com.history.mapper: debug
-
-# AI服务配置（支持OpenAI兼容接口，如DeepSeek、通义千问等）
-ai:
-  # API基础URL，可选：
-  # OpenAI: https://api.openai.com/v1
-  # DeepSeek: https://api.deepseek.com/v1
-  # 通义千问: https://dashscope.aliyuncs.com/compatible-mode/v1
-  base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
-  # API密钥（请替换为你的真实密钥）
-  # 通义千问的API Key从阿里云百炼平台获取：https://bailian.console.aliyun.com/
-  api-key: ${AI_API_KEY:your-api-key}
-  # 模型名称，可选：
-  # OpenAI: gpt-3.5-turbo, gpt-4
-  # DeepSeek: deepseek-chat
-  # 通义千问: qwen-turbo, qwen-plus, qwen-max
-  model: qwen3-max
-  temperature: 0.7
-  max-tokens: 2000

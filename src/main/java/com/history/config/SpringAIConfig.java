@@ -1,39 +1,22 @@
 package com.history.config;
 
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.reactive.function.client.WebClient;
 
 /**
- * AI服务配置
+ * Spring AI 配置类
+ * 使用 Spring AI 框架接入 OpenAI 兼容的大模型
  * @author Diamond
  */
-@Data
 @Configuration
-@ConfigurationProperties(prefix = "ai")
-public class AIConfig {
-
-    /**
-     * API基础URL（支持OpenAI兼容接口）
-     */
-    private String baseUrl = "https://api.openai.com/v1";
-
-    /**
-     * API密钥
-     */
-    private String apiKey;
-
-    /**
-     * 模型名称
-     */
-    private String model = "gpt-3.5-turbo";
+public class SpringAIConfig {
 
     /**
      * 系统提示词
      */
-    private String systemPrompt = """
+    public static final String SYSTEM_PROMPT = """
             # 角色设定
             你是"华夏历史助手"，一位博学多才的中国历史学者。你精通上下五千年的中华文明史，从远古传说到近现代历史都有深入研究。
             
@@ -57,31 +40,17 @@ public class AIConfig {
             - 适当引用古文原文并给出解释
             - 回答长度适中，既要详尽又不冗长
             
-            # 边界处理
-            - 如果问题涉及敏感政治话题，请委婉引导到历史学术讨论
-            - 如果问题超出中国历史范围，可简要回答后引导回中国历史话题
-            - 如果不确定某些细节，请诚实说明并提供可靠的参考方向
-            
             请用中文回答，保持专业、友好、富有学者风范的语气。
             """;
 
     /**
-     * 温度参数（0-2，越高越随机）
+     * 创建 ChatClient Bean
+     * ChatClient 是 Spring AI 的核心接口，提供流畅的 API
      */
-    private Double temperature = 0.7;
-
-    /**
-     * 最大token数
-     */
-    private Integer maxTokens = 2000;
-
     @Bean
-    public WebClient aiWebClient() {
-        return WebClient.builder()
-                .baseUrl(baseUrl)
-                .defaultHeader("Authorization", "Bearer " + apiKey)
-                .defaultHeader("Content-Type", "application/json")
-                .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(10 * 1024 * 1024))
+    public ChatClient chatClient(OpenAiChatModel chatModel) {
+        return ChatClient.builder(chatModel)
+                .defaultSystem(SYSTEM_PROMPT)
                 .build();
     }
 }
